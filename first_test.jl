@@ -1,4 +1,4 @@
-totallines = open("C:/Users/wolfe/AppData/Local/JuliaPro-1.0.5-2/docs/testdoc.txt") do f
+totallines = open("/Github/csci_6221/testdoc.txt") do f
     linecounter = 0
     for ln in eachline(f)
         linecounter += 1
@@ -6,7 +6,7 @@ totallines = open("C:/Users/wolfe/AppData/Local/JuliaPro-1.0.5-2/docs/testdoc.tx
     (linecounter)
 end
 
-book = open("C:/Users/wolfe/AppData/Local/JuliaPro-1.0.5-2/docs/testdoc.txt") do file
+book = open("/Github/csci_6221/testdoc.txt") do file
     read(file, String)
 end
 
