@@ -1,82 +1,109 @@
-totallines = open("/Github/csci_6221/testdoc.txt") do f
-    linecounter = 0
-    for ln in eachline(f)
-        linecounter += 1
+#Takes in the book file and converts it to a string
+function bookToString(file_path)
+    stringBook = open(file_path) do file
+        read(file, String)
     end
-    (linecounter)
+    return stringBook
 end
 
-book = open("/Github/csci_6221/testdoc.txt") do file
-    read(file, String)
+#Returns total words in the book
+function totalWords(book)
+    totalWords = length(split(book))
+    return totalWords
 end
 
-new_arr = split(book)
-words = length(new_arr)
-print("There are $words words in the book")
-
-function getChars(_arr)
-    totalchars = 0
-    for i in _arr
-        totalchars += (length(i))
-    end
-    return totalchars
-end
-chars = getChars(new_arr)
-print("There are $chars characters in the book")
-
-wordLength = chars / words
-print("The average word length is $wordLength characters")
-
-function getPunc(_arr)
-    totalPunc = 0
-    for i in _arr
-        if(occursin(".", i))
-            totalPunc += 1
-        end
-        if(occursin("!", i))
-            totalPunc += 1
-        end
-        if(occursin("?", i))
-            totalPunc += 1
-        end
-    end
-    return totalPunc
-end
-numPunc = getPunc(new_arr)
-print("The number of punctuation marks in the book is $numPunc")
-
-sentenceLength = words / numPunc
-print("The average sentence length is $sentenceLength words")
-
-function killPunc(_arr)
-    for i in _arr
-        replace(i, "." => "")
-        replace(i, "," => "")
-        replace(i, "!" => "")
-        replace(i, "?" => "")
-    end
-    return _arr
+#Returns total characters in the book
+function totalChars(book)
+    processedBook = replace(book, r"""[!?.;,-_():"' ]""" => "")
+    finalIndex = lastindex(processedBook)
+    return finalIndex
 end
 
-killedArr = killPunc(new_arr)
+#Returns average word length of words in the book
+function avgWordLength(totalChars, totalWords)
+    return totalChars / totalWords
+end
 
-function createDictionary(_arr)
-    dict = Dict()
-    for i in _arr
-        if(haskey(dict, i))
-            dict[i] += 1
+#Returns the number of sentence ending puncuation marks in the book
+function sentenceEnders(book)
+    enders = count(c -> c == '.', book)
+    enders += count(c -> c == '!', book)
+    enders += count(c -> c == '?', book)
+    return enders
+end
+
+#Returns the average sentence length by dividing total words by number of
+#sentence ending punctuation marks
+function avgSentenceLength(totalWords, enders)
+    return totalWords / enders
+end
+
+#Converts text of book to lowercase, removes punctuation, and creates a dictionary
+#to associate each word with frequency of its occurrence
+function createDictionary(book)
+    lowercaseBook = lowercase(book)
+    noPuncBook = replace(lowercaseBook, r"""[!?.;,-_():"']""" => "")
+    bookArray = split(noPuncBook)
+    bookDictionary = Dict()
+    for i in bookArray
+        if(haskey(bookDictionary, i))
+            bookDictionary[i] += 1
         else
-            dict[i] = 1
+            bookDictionary[i] = 1
         end
     end
-    return dict
+    return bookDictionary
 end
 
-bookDict = createDictionary(killedArr)
-print(bookDict["Bingley"])
-#print(sizeof(bookDict))
-#dictionarySize = length.(collect(keys(bookDict)))
-#print(" $dictionarySize")
-bookArray = sort(collect(bookDict), by = tuple -> last(tuple), rev=true)
-uniqueWords = length(bookArray)
-print(" $uniqueWords")
+#Creates an array of tuples sorted by frequency of word occurence in dictionary;
+#first index is the key (word), second index is the value (frequency)
+function createFreqArray(bookDict)
+    frequencyArray = sort(collect(bookDict), by = tuple -> last(tuple))
+    return frequencyArray
+end
+
+#Returns number of unique words in the book
+function uWords(freqArray)
+    return length(freqArray)
+end
+
+#Returns a measure of how likely a text is to use unusual language,
+#based on the variation of the words in the text itself
+function vocabVariation(freqArray)
+    uniqWords = length(freqArray)
+    medianWords = uniqWords / 2
+    currentIndex = 1
+    wordCounter = 0
+    while (wordCounter <= medianWords)
+        wordCounter += (freqArray[currentIndex][2])
+        currentIndex += 1
+    end
+    #Calculation is based on where the median falls - earlier means less
+    #variation of vocabulary in the text
+    vocabularyVariation = currentIndex / uniqWords
+    return vocabularyVariation
+end
+
+#Calculates composite language complexity score by multiplying together
+#average word length, average sentence length, and variation in vocabulary
+function langCompositeScore(wLength, sLength, vVariation)
+    return wLength * sLength * vVariation
+end
+
+#Tests using Pride and Prejudice
+pripred = bookToString("C:\\Users\\wolfe\\Documents\\GitHub\\csci_6221\\testdoc.txt")
+ppWords = totalWords(pripred)
+ppChars = totalChars(pripred)
+ppWordLength = avgWordLength(ppChars, ppWords)
+ppEnders = sentenceEnders(pripred)
+ppSentenceLength = avgSentenceLength(ppWords, ppEnders)
+ppDictionary = createDictionary(pripred)
+ppArray = createFreqArray(ppDictionary)
+ppUniqWords = uWords(ppArray)
+ppVocab = vocabVariation(ppArray)
+ppScore = langCompositeScore(ppWordLength, ppSentenceLength, ppVocab)
+
+print("\nPride and Prejudice\nTotal Words: $ppWords\nUnique Words: $ppUniqWords
+Total Characters: $ppChars\nAverage Word Length: $ppWordLength
+Average Sentence Length: $ppSentenceLength\nVocabulary Variation: $ppVocab
+Composite Literary Score: $ppScore")
