@@ -91,7 +91,8 @@ function langCompositeScore(wLength, sLength, vVariation)
 end
 
 #Tests using Pride and Prejudice
-pripred = bookToString("C:\\Users\\wolfe\\Documents\\GitHub\\csci_6221\\testdoc.txt")
+# Edit this for testing purposes
+pripred = bookToString("D:\\Documents\\GWU\\CS6221\\csci_6221\\testdoc.txt")
 ppWords = totalWords(pripred)
 ppChars = totalChars(pripred)
 ppWordLength = avgWordLength(ppChars, ppWords)
@@ -105,5 +106,5 @@ ppScore = langCompositeScore(ppWordLength, ppSentenceLength, ppVocab)
 
 print("\nPride and Prejudice\nTotal Words: $ppWords\nUnique Words: $ppUniqWords
 Total Characters: $ppChars\nAverage Word Length: $ppWordLength
-Average Sentence Length: $ppSentenceLength\nVocabulary Variation: $ppVocab
+Average Sentence Length: $ppSentenceLength\nVocabulary Variation: $ppVocab\n
 Composite Literary Score: $ppScore")
