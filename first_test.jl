@@ -5,6 +5,15 @@ Pkg.build("PyCall")
 import PyCall
 using PyCall
 
+function getLibPath()
+    base = (Base.source_path(), @__DIR__ )
+    lib = "\\Ulibrary\\"
+    libPath = string(base[2], lib)
+    return libPath
+end
+
+libPath = getLibPath()
+
 py"""
 import numpy as numpy
 import os as os
@@ -19,7 +28,7 @@ from scipy import spatial
 from os import listdir
 from os.path import isfile, join
 
-libLink = 'C:\\Users\\wolfe\\corpus\\'
+libLink = $libPath
 
 user_corpus = []
 d2v_vecs = []
@@ -71,6 +80,7 @@ def returnSimilar(i):
     return most_similar[i]
 
 d2v()
+
 """
 
 mutable struct bookLibrary
@@ -236,52 +246,8 @@ end
 
 
 #Test Code
-duck = bookLibrary("Duck", "C:\\Users\\wolfe\\corpus\\")
-for i in duck.bookList
+rlw = bookLibrary("RLW", libPath)
+for i in rlw.bookList
     print(i.totalWords)
     print(" ")
 end
-
-
-
-
-#Possibly useless code written before implementing Doc2Vec library
-
-#=
-#Creates a dictionary of all words in the library by merging a vector of
-#dictionaries for each book into a single master dictioary
-function masterDictionary(masterDict, dictVector)
-    for i in dictVector
-        merge(i, masterDict)
-    end
-    return masterDict
-end
-
-#Returns the number of words which occur only in the particular book (and not in
-#any other books), and the total number of times those words occur in the book
-function unsharedLanguage(bookDict, masterDict)
-    unsharedWords = 0
-    totalUnshared = 0
-    for key in keys(bookDict)
-        if (masterDict[key] == bookDict[key])
-            unsharedWords += 1
-            totalUnshared += bookDict[key]
-        end
-    end
-    unshared = [unsharedWords, totalUnshared]
-    return unshared
-end
-
-function uniqueShared(unsharedWords, uniqueWords)
-    return (1 - (unsharedWords / uniqueWords))
-end
-
-function totalShared(totalSharedWords, totalWords)
-    return (1 - (totalSharedWords / totalWords))
-end
-
-function overlapScore(uniqueShared, totalShared)
-    return uniqueShared * totalShared
-end
-
-=#
