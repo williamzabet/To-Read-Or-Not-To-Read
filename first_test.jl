@@ -1,12 +1,22 @@
 import Pkg
 Pkg.add("PyCall")
+Pkg.add("Plots")
 ENV["PYTHON"] = "C:\\Users\\wolfe\\AppData\\Local\\Programs\\Python\\Python37\\python.exe"
 Pkg.build("PyCall")
 import PyCall
 using PyCall
+using Plots
+
+gr()
+Plots.GRBackend()
+
+projectDir = (Base.source_path(), @__DIR__)
+scrapeFile = "\\GoodReads_Scraping.jl"
+imFile = string(projectDir[2], scrapeFile)
+include(imFile)
 
 function getLibPath()
-    base = (Base.source_path(), @__DIR__ )
+    base = (Base.source_path(), @__DIR__)
     lib = "\\Ulibrary\\"
     libPath = string(base[2], lib)
     return libPath
@@ -88,6 +98,7 @@ mutable struct bookLibrary
     dirPath
     bookFiles
     bookList
+    isbnList
 
     #=
     masterDictionary::Dict
@@ -103,13 +114,14 @@ mutable struct bookLibrary
     meanUnsharedTotal::Int
     meanOverlap::Float32
     =#
-    function bookLibrary(name, dirPath)
+    function bookLibrary(name, dirPath, isbnList)
         fileNames = readdir(dirPath)
         structList = []
+        scrapedData = book_stats(isbnList)
         for i in fileNames
-            push!(structList, book(i, dirPath))
+            push!(structList, book(i, dirPath, scrapedData))
         end
-        new(name, dirPath, fileNames, structList)
+        new(name, dirPath, fileNames, structList, isbnList)
     end
 end
 
@@ -129,8 +141,17 @@ struct book
     overlap
     d2vVector
     mostSimilarBooks
+    title
+    author
+    publishDate
+    rating
+    numRaters
+    numReviews
+    numPages
+    awards
+    genres
 
-    function book(fileName, filePath)
+    function book(fileName, filePath, scrapedData)
         bookString = bookToString(string(filePath, fileName))
         tWords = totalWords(bookString)
         tChars = totalChars(bookString)
@@ -146,8 +167,20 @@ struct book
         langOverlap = py"returnOverlap"(ind)
         vect = py"returnVector"(ind)
         similarBooks = py"returnSimilar"(ind)
+        julInd = ind + 1
+        bTitle = getindex(getindex(scrapedData, 1), julInd)
+        bAuthor = getindex(getindex(scrapedData, 2), julInd)
+        bPubDate = getindex(getindex(scrapedData, 3), julInd)
+        bRating = getindex(getindex(scrapedData, 4), julInd)
+        bRaters = getindex(getindex(scrapedData, 5), julInd)
+        bRevs = getindex(getindex(scrapedData, 6), julInd)
+        bPages = getindex(getindex(scrapedData, 7), julInd)
+        bAwards = getindex(getindex(scrapedData, 8), julInd)
+        bGenres = getindex(getindex(scrapedData, 9), julInd)
+
         new(fileName, filePath, tWords, tChars, wLength, sEnders, sLength, bDict, fArray, uW, vV, lCS,
-        langOverlap, vect, similarBooks)
+        langOverlap, vect, similarBooks, bTitle, bAuthor, bPubDate, bRating, bRaters, bRevs, bPages, bAwards,
+        bGenres)
     end
 end
 
@@ -243,11 +276,29 @@ function langCompositeScore(wLength, sLength, vVariation)
     return wLength * sLength * vVariation
 end
 
+rlwISBNS = ["9780977716173", "9781521128220", "0486282112", "1640320342", "9780553213119", "9781605975962",
+"0486284735", "9780895772770", "9780141439600", "9781494405496", "1558611584"]
 
+function visualize(libName)
+    xValues = []
+    yValues = []
+
+    for i in libName.bookList
+        push!(xValues, i.overlap)
+        push!(yValues, i.languageComplexity)
+    end
+
+    t = plot(xValues, yValues, seriestype = :scatter, markersize = 4, c = :orange,
+    title = "RLW Library", legend = nothing)
+    xlabel!("D2V Overlap Score")
+    ylabel!("Language Complexity Score")
+    for i = 1:length(libName.bookList)
+        annotate!(xValues[i], (yValues[i] + 0.035), Plots.text(libName.bookList[i].title, 6, :blue, :center))
+    end
+    display(t)
+end
 
 #Test Code
-rlw = bookLibrary("RLW", libPath)
-for i in rlw.bookList
-    print(i.totalWords)
-    print(" ")
-end
+rlw = bookLibrary("RLW", libPath, rlwISBNS)
+
+visualize(rlw)
