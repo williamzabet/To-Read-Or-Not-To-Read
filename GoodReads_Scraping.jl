@@ -60,8 +60,8 @@ franks_list = ["9780060935467", "0310276993", "0143058142", "0192833596", "05171
 
 #Function that takes a string array of a person's 10 favorite books (IBSN# for each book) and returns a df of 9 values
 function book_stats(book_list)
-    
-    
+
+
     ibsn1 = []
     #empty array to take the url for each book on Goodreads.com
     review_url = String[]
@@ -72,11 +72,11 @@ function book_stats(book_list)
         review = a*ibsn
         push!(review_url, review)
     end
-    
+
     #empty arrays for 9 values being scraped
     book_title = String[]
     book_author = String[]
-    book_published = []  
+    book_published = []
     book_rating = String[]
     book_raters = String[]
     book_reviews = String[]
@@ -84,14 +84,14 @@ function book_stats(book_list)
     book_awards = []
     book_genres = []
     book_summary = String[]
-    
+
     #loops through each url and scrapes the page based on the criteria
     for i in review_url
         #get request for each page
         url = HTTP.get(i)
         #parses the html body of each page
         body = parsehtml(String(url.body))
-        
+
         #Title of each book was found at id = bookTitle
         title = eachmatch(Selector("#bookTitle"),body.root)
         title1 = nodeText(eachmatch(Selector("#bookTitle"), body.root)[1])
@@ -99,12 +99,12 @@ function book_stats(book_list)
         title2 = replace(title1, "\n" => "")
         title3 = replace(title2, "      " => "")
         push!(book_title, title3)
-        
+
         #author of each book was found at class = authorName
         author = eachmatch(Selector(".authorName"),body.root)
         author1 = nodeText(eachmatch(Selector(".authorName"), body.root)[1])
         push!(book_author, author1)
-        
+
         #dates published were found at the 2nd id=row within the class = .uitext darkGreyText
         book_published0 = []
         published = eachmatch(Selector(".uitext.darkGreyText"), body.root)
@@ -127,14 +127,14 @@ function book_stats(book_list)
             #i = Date(i, converter) returns the dates in a YYYY-MM-YY format but exact dates aren't available
             push!(book_published, i)
         end
-        
+
         #rating for each book was found at <span itemprop=ratingValue></span>
         rating = eachmatch(Selector("span[itemprop*=ratingValue]"),body.root)
         rating1 = nodeText(eachmatch(Selector("span[itemprop*=ratingValue]"), body.root)[1])
         rating2 = replace(rating1, "\n" => "")
         rating3 = replace(rating2, "  " => "")
         push!(book_rating, rating3)
-        
+
         #num of raters was found within  <a><href = other_reviews></a> on the first row
         raters = eachmatch(Selector("a[href*=other_reviews]"),body.root)
         raters1 = nodeText(eachmatch(Selector("a[href*=other_reviews]"), body.root)[1])
@@ -152,8 +152,8 @@ function book_stats(book_list)
         reviews4 = replace(reviews3, "reviews" => "")
         reviews5 = replace(reviews4, "," => "")
         push!(book_reviews, reviews5)
-        
-        
+
+
         details = eachmatch(Selector(".infoBoxRowTitle"), body.root)
         awards = String[]
         for i in details
@@ -174,22 +174,22 @@ function book_stats(book_list)
             n += 1
         end
         push!(book_awards, n)
-        
+
         pages = nodeText(eachmatch(Selector("span[itemprop*=numberOfPages]"), body.root)[1])
         pages1 = replace(pages, " pages" => "")
-        push!(book_pages, pages1)    
+        push!(book_pages, pages1)
     end
 
     for i in review_url
         url = HTTP.get(i)
         body = parsehtml(String(url.body))
-    
+
         genre1 = eachmatch(Selector(".actionLinkLite.bookPageGenreLink"), body.root)
         genre0 = String[]
         for g in genre1
             genre2 = nodeText(eachmatch(Selector(".actionLinkLite.bookPageGenreLink"), g)[1])
-            if occursin("users", genre2) == false  
-                push!(genre0, genre2)          
+            if occursin("users", genre2) == false
+                push!(genre0, genre2)
             end
             genre0 = unique(genre0)
         end
@@ -217,12 +217,19 @@ function book_stats(book_list)
     book_reviews = parse.(Int, book_reviews)
     book_pages = parse.(Int, book_pages)
     convert(Array{String,1}, book_published)
-    book_published = parse.(Int, book_published)    
+    book_published = parse.(Int, book_published)
 
 
 
-    df = DataFrame(Title=book_title, Author=book_author, Date_Published = book_published, Rating=book_rating, Num_of_Raters=book_raters, 
+    df = DataFrame(Title=book_title, Author=book_author, Date_Published = book_published, Rating=book_rating, Num_of_Raters=book_raters,
         Num_of_Reviews=book_reviews, Num_of_Pages = book_pages, Literary_Awards = book_awards, Genres=book_genres, IBSN = ibsn1, Summary=book_summary)
+
+
+    scrapedDataArr = [book_title, book_author, book_published, book_rating, book_raters, book_reviews, book_pages,
+    book_awards, book_genres]
+
+    return scrapedDataArr
+
 end
 
 William = book_stats(williams_list)
@@ -278,13 +285,12 @@ avg_df.Average_Awards = convert(Array{Float64,1}, avg_df.Average_Awards)
 
 avg_df
 
-#order: x, y 
+#order: x, y
 plot1 = Plots.plot(avg_df.Average_Date, avg_df.Average_Raters, title = "My Title", label = ["Line 1"], lw = 3) #lw = line width
 @show plot1
 
 gr() # We will continue onward using the GR backend
-Plots.plot(avg_df.Average_Date,avg_df.Average_Raters, seriestype = :scatter, 
+Plots.plot(avg_df.Average_Date,avg_df.Average_Raters, seriestype = :scatter,
     title = "My Scatter Plot", label = "label")
 xlabel!("x label")
 ylabel!("y label")
-
