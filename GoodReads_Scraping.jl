@@ -25,7 +25,6 @@ Pkg.add("DelimitedFiles")
 
 Pkg.add("Gadfly")
 
-
 using Gumbo
 using Cascadia
 using HTTP
@@ -225,6 +224,7 @@ function book_stats(book_list)
         Num_of_Reviews=book_reviews, Num_of_Pages = book_pages, Literary_Awards = book_awards, Genres=book_genres, IBSN = ibsn1, Summary=book_summary)
 
 
+    display(df)
     scrapedDataArr = [book_title, book_author, book_published, book_rating, book_raters, book_reviews, book_pages,
     book_awards, book_genres]
 

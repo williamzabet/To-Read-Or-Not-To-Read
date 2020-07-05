@@ -276,25 +276,37 @@ function langCompositeScore(wLength, sLength, vVariation)
     return wLength * sLength * vVariation
 end
 
-rlwISBNS = ["9780977716173", "9781521128220", "0486282112", "1640320342", "9780553213119", "9781605975962",
+rlwISBNS = ["9780977716173", "9781521128220", "0486282112", "0451532252", "9780553213119", "9781605975962",
 "0486284735", "9780895772770", "9780141439600", "9781494405496", "1558611584"]
 
 function visualize(libName)
     xValues = []
     yValues = []
+    xSum = 0
+    ySum = 0
 
     for i in libName.bookList
         push!(xValues, i.overlap)
+        xSum += i.overlap
         push!(yValues, i.languageComplexity)
+        ySum += i.languageComplexity
     end
+
+    xMean = xSum / length(libName.bookList)
+    yMean = ySum / length(libName.bookList)
+
+    push!(xValues, xMean)
+    push!(yValues, yMean)
 
     t = plot(xValues, yValues, seriestype = :scatter, markersize = 4, c = :orange,
     title = "RLW Library", legend = nothing)
     xlabel!("D2V Overlap Score")
     ylabel!("Language Complexity Score")
-    for i = 1:length(libName.bookList)
+    for i = 1:(length(xValues) - 1)
         annotate!(xValues[i], (yValues[i] + 0.035), Plots.text(libName.bookList[i].title, 6, :blue, :center))
     end
+    annotate!(xValues[length(xValues)], (yValues[length(yValues)] + 0.035), Plots.text("Mean User Taste", 6, :red, :center))
+
     display(t)
 end
 
