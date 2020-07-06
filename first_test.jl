@@ -1,7 +1,11 @@
 import Pkg
 Pkg.add("PyCall")
 Pkg.add("Plots")
-ENV["PYTHON"] = "C:\\Users\\wolfe\\AppData\\Local\\Programs\\Python\\Python37\\python.exe"
+
+#CHANGE LOCATION OF PYTHON EXECUTABLE FOR YOUR LOCAL MACHINE
+ENV["PYTHON"] = "/Library/Frameworks/Python.framework/Versions/3.8/bin/python3"
+#ENV["PYTHON"] = "C:\\Users\\wolfe\\AppData\\Local\\Programs\\Python\\Python37\\python.exe"
+
 Pkg.build("PyCall")
 import PyCall
 using PyCall
@@ -11,18 +15,16 @@ gr()
 Plots.GRBackend()
 
 projectDir = (Base.source_path(), @__DIR__)
-scrapeFile = "\\GoodReads_Scraping.jl"
+# scrapeFile = "\\GoodReads_Scraping.jl"  # FOR WINDOWS
+scrapeFile = "/GoodReads_Scraping.jl" # FOR MACS
 imFile = string(projectDir[2], scrapeFile)
 include(imFile)
 
-function getLibPath()
-    base = (Base.source_path(), @__DIR__)
-    lib = "\\Ulibrary\\"
-    libPath = string(base[2], lib)
-    return libPath
-end
 
-libPath = getLibPath()
+base = (Base.source_path(), @__DIR__)
+lib = "/Ulibrary/"  # FOR MACS
+# lib = "\\Ulibrary\\"  # FOR WINDOWS
+libPath = string(base[2], lib)
 
 py"""
 import numpy as numpy
@@ -46,6 +48,7 @@ overlap = []
 most_similar = []
 
 user_library = [join(libLink, file) for file in os.listdir(libLink) if os.path.isfile(join(libLink, file))]
+# print('\n\nUSER LIBRARY: %s\n\n\n' % user_library)
 
 def d2v():
     master_string = ""
@@ -298,7 +301,7 @@ function visualize(libName)
     push!(xValues, xMean)
     push!(yValues, yMean)
 
-    t = plot(xValues, yValues, seriestype = :scatter, markersize = 4, c = :orange,
+    t = Plots.plot(xValues, yValues, seriestype = :scatter, markersize = 4, c = :orange,
     title = "RLW Library", legend = nothing)
     xlabel!("D2V Overlap Score")
     ylabel!("Language Complexity Score")

@@ -246,12 +246,12 @@ avg_pages = Any[]
 avg_awards = Any[]
 
 function data_compiler(library)
-    push!(avg_date, mean(library.Date_Published))
-    push!(avg_rating, mean(library.Rating))
-    push!(avg_raters, mean(library.Num_of_Raters))
-    push!(avg_reviews, mean(library.Num_of_Reviews))
-    push!(avg_pages, mean(library.Num_of_Pages))
-    push!(avg_awards, mean(library.Literary_Awards))
+    push!(avg_date, mean(library[3])) #book_published
+    push!(avg_rating, mean(library[4])) #book_rating
+    push!(avg_raters, mean(library[5])) #book_raters
+    push!(avg_reviews, mean(library[6])) #book_reviews
+    push!(avg_pages, mean(library[7])) #book_awards
+    push!(avg_awards, mean(library[8])) #book_genres
 end
 
 William1 = data_compiler(William)
