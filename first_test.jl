@@ -282,18 +282,199 @@ end
 rlwISBNS = ["9780977716173", "9781521128220", "0486282112", "0451532252", "9780553213119", "9781605975962",
 "0486284735", "9780895772770", "9780141439600", "9781494405496", "1558611584"]
 
-function visualize(libName)
+function visualize(libName, choice1 = "overlap", choice2="languageComplexity")
     xValues = []
     yValues = []
     xSum = 0
     ySum = 0
 
-    for i in libName.bookList
-        push!(xValues, i.overlap)
-        xSum += i.overlap
-        push!(yValues, i.languageComplexity)
-        ySum += i.languageComplexity
+    if (choice1 == "overlap")
+        for i in libName.bookList
+            push!(xValues, i.overlap)
+            xSum += i.overlap
+        end
+    elseif (choice1 == "languageComplexity")
+        for i in libName.bookList
+            push!(xValues, i.languageComplexity)
+            xSum += i.languageComplexity
+        end
+    elseif (choice1 == "totalWords")
+        for i in libName.bookList
+            push!(xValues, i.totalWords)
+            xSum += i.totalWords
+        end
+    elseif (choice1 == "totalChars")
+        for i in libName.bookList
+            push!(xValues, i.totalChars)
+            xSum += i.totalChars
+        end
+    elseif (choice1 == "wordLength")
+        for i in libName.bookList
+            push!(xValues, i.wordLength)
+            xSum += i.wordLength
+        end
+    elseif (choice1 == "sentenceEnders")
+        for i in libName.bookList
+            push!(xValues, i.sentenceEnders)
+            xSum += i.sentenceEnders
+        end
+    elseif (choice1 == "sentenceLength")
+        for i in libName.bookList
+            push!(xValues, i.sentenceLength)
+            xSum += i.sentenceLength
+        end
+    elseif (choice1 == "wordFrequency")
+        for i in libName.bookList
+            push!(xValues, i.wordFrequency)
+            xSum += i.wordFrequency
+        end
+    elseif (choice1 == "uniqueWords")
+        for i in libName.bookList
+            push!(xValues, i.uniqueWords)
+            xSum += i.uniqueWords
+        end
+    elseif (choice1 == "vocabVariation")
+        for i in libName.bookList
+            push!(xValues, i.vocabVariation)
+            xSum += i.vocabVariation
+        end
+    elseif (choice1 == "d2vVector")
+        for i in libName.bookList
+            push!(xValues, i.d2vVector)
+            xSum += i.d2vVector
+        end
+    elseif (choice1 == "publishDate")
+        for i in libName.bookList
+            push!(xValues, i.publishDate)
+            xSum += i.publishDate
+        end
+    elseif (choice1 == "rating")
+        for i in libName.bookList
+            push!(xValues, i.rating)
+            xSum += i.rating
+        end
+    elseif (choice1 == "numRaters")
+        for i in libName.bookList
+            push!(xValues, i.numRaters)
+            xSum += i.numRaters
+        end
+    elseif (choice1 == "numReviews")
+        for i in libName.bookList
+            push!(xValues, i.numReviews)
+            xSum += i.numReviews
+        end
+    elseif (choice1 == "numPages")
+        for i in libName.bookList
+            push!(xValues, i.numPages)
+            xSum += i.numPages
+        end
+    elseif (choice1 == "awards")
+        for i in libName.bookList
+            push!(xValues, i.awards)
+            xSum += i.awards
+        end
+    else
+        for i in libName.bookList
+            push!(xValues, i.overlap)
+            xSum += i.overlap
+        choice1 = "D2V Overlap Score"
+        end
     end
+
+
+    if (choice2 == "overlap")
+        for i in libName.bookList
+            push!(yValues, i.overlap)
+            ySum += i.overlap
+        end
+    elseif (choice2 == "languageComplexity")
+        for i in libName.bookList
+            push!(yValues, i.languageComplexity)
+            ySum += i.languageComplexity
+        end
+    elseif (choice2 == "totalWords")
+        for i in libName.bookList
+            push!(yValues, i.totalWords)
+            ySum += i.totalWords
+        end
+    elseif (choice2 == "totalChars")
+        for i in libName.bookList
+            push!(yValues, i.totalChars)
+            ySum += i.totalChars
+        end
+    elseif (choice2 == "wordLength")
+        for i in libName.bookList
+            push!(yValues, i.wordLength)
+            ySum += i.wordLength
+        end
+    elseif (choice2 == "sentenceEnders")
+        for i in libName.bookList
+            push!(yValues, i.sentenceEnders)
+            ySum += i.sentenceEnders
+        end
+    elseif (choice2 == "sentenceLength")
+        for i in libName.bookList
+            push!(yValues, i.sentenceLength)
+            ySum += i.sentenceLength
+        end
+    elseif (choice2 == "wordFrequency")
+        for i in libName.bookList
+            push!(yValues, i.wordFrequency)
+            ySum += i.wordFrequency
+        end
+    elseif (choice2 == "uniqueWords")
+        for i in libName.bookList
+            push!(yValues, i.uniqueWords)
+            ySum += i.uniqueWords
+        end
+    elseif (choice2 == "vocabVariation")
+        for i in libName.bookList
+            push!(yValues, i.vocabVariation)
+            ySum += i.vocabVariation
+        end
+    elseif (choice2 == "d2vVector")
+        for i in libName.bookList
+            push!(yValues, i.d2vVector)
+            ySum += i.d2vVector
+        end
+    elseif (choice2 == "publishDate")
+        for i in libName.bookList
+            push!(yValues, i.publishDate)
+            ySum += i.publishDate
+        end
+    elseif (choice2 == "rating")
+        for i in libName.bookList
+            push!(yValues, i.rating)
+            ySum += i.rating
+        end
+    elseif (choice2 == "numRaters")
+        for i in libName.bookList
+            push!(yValues, i.numRaters)
+            ySum += i.numRaters
+        end
+    elseif (choice2 == "numReviews")
+        for i in libName.bookList
+            push!(yValues, i.numReviews)
+            ySum += i.numReviews
+        end
+    elseif (choice2 == "numPages")
+        for i in libName.bookList
+            push!(yValues, i.numPages)
+            ySum += i.numPages
+        end
+    elseif (choice2 == "awards")
+        for i in libName.bookList
+            push!(yValues, i.awards)
+            ySum += i.awards
+        end
+    else
+        for i in libName.bookList
+            push!(yValues, i.languageComplexity)
+            ySum += i.languageComplexity
+        end
+        choice2 = "Language Complexity Score"
+    end
+
 
     xMean = xSum / length(libName.bookList)
     yMean = ySum / length(libName.bookList)
@@ -303,8 +484,10 @@ function visualize(libName)
 
     t = Plots.plot(xValues, yValues, seriestype = :scatter, markersize = 4, c = :orange,
     title = "RLW Library", legend = nothing)
-    xlabel!("D2V Overlap Score")
-    ylabel!("Language Complexity Score")
+    labelx = string("Choice 1: ",choice1)
+    labely = string("Choice 2: ",choice2)
+    xlabel!(labelx)
+    ylabel!(labely)
     for i = 1:(length(xValues) - 1)
         annotate!(xValues[i], (yValues[i] + 0.035), Plots.text(libName.bookList[i].title, 6, :blue, :center))
     end
@@ -316,4 +499,35 @@ end
 #Test Code
 rlw = bookLibrary("RLW", libPath, rlwISBNS)
 
-visualize(rlw)
+
+
+while(true)
+    print("\nChoices are:
+    totalWords
+    totalChars
+    sentenceEnders
+    sentenceLength
+    wordFrequency
+    uniqueWords
+    vocabVariation
+    languageComplexity
+    overlap
+    d2vVector
+    publishDate
+    rating
+    numRaters
+    numReviews
+    numPages
+    awards
+    \nType in full variable name as is for choices.\nType \'quit\' to exit for either choice.\nDefault x is overlap, default y is languageComplexity")
+
+    choice1 = input("\nChoice 1 (x-axis): ")
+    choice2 = input("\nChoice 2 (y-axis): ")
+
+    if (choice1 == "quit") || (choice2 == "quit")
+        break
+    end
+
+    visualize(rlw, choice1, choice2)
+end
+print("\nGOODBYE")
